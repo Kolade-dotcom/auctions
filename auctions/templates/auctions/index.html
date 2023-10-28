@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ page_heading }}</h2>
+
+    <form action="{% url 'index' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="query" id="listing" placeholder="Search Item">
+        <input type="submit" value="Search">
+    </form>
+    
+    {% for listing in listings %}
+        <a href="{% url 'listing_page' listing.id %}" class="listing-link">
+            <div class="listing-container">
+                <div>
+                    <img src="{{ listing.image_url }}" alt="Image representing <{{ listing.title }}>" class="listing-image">
+                </div>
+                <div>
+                    <h4>{{ listing.title }}</h4>
+                    <p><h5 style="display: inline-block;">Price:</h5> ${{ listing.current_bid }}</p>
+                    <h5>Description:</h5>
+                    <p>{{ listing.description }}</p>
+                </div>
+            </div>
+        </a>
+    {% empty %}
+        No avaliable listing.
+    {% endfor %}
+{% endblock %}

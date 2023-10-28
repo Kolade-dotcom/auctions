@@ -1,0 +1,56 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if not listing.active and user == highest_bidder %}
+        <h2>You have Won this auction.</h2>
+    {% elif not listing.active %}
+        <h2>This auction is no longer active</h2>
+    {% else %}
+        <h2>{{ listing.title }}</h2>
+
+        <p><h5 style="display: inline-block;">Price:</h5> ${{ listing.current_bid }}</p>
+
+        <form action="{% url 'watch_unwatch' listing.id %}">
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+
+            {% if user in listing.watched_by.all %}
+                <input type="submit" value="Remove from Watchlist">
+            {% else %}
+                <input type="submit" value="Add to Watchlist">
+            {% endif %}
+        </form>
+
+        <img src="{{ listing.image_url }}" alt="Image representing <{{ listing.title }}>" width="500px" height="450px">
+
+        <p>{{ listing.description }}</p>
+
+        <form action="{% url 'bid' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="number" name="bid_amount">
+            <input type="submit" value="Bid">
+        </form>
+
+        <h4>Comments:</h4>
+
+        <ul>
+            {% for comment in comments %}
+                <li>{{ comment.content }}</li>
+            {% empty %}
+                <li>No comments yet.</li>
+            {% endfor %}
+        </ul>
+
+        <form action="{% url 'comment' listing.id %}" method="post">
+            {% csrf_token %}
+            <label for="id_content">Content:</label>
+            <textarea name="content"  cols="30" rows="10"></textarea>
+            <input type="submit" value="Comment">
+        </form>
+
+        {% if user == listing.creator %}
+            <form action="{% url 'close' listing.id %}">
+                <input type="submit" value="Close Auction">
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}
