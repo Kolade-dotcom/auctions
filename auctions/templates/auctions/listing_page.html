@@ -1,56 +1,61 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    {% if not listing.active and user == highest_bidder %}
-        <h2>You have Won this auction.</h2>
-    {% elif not listing.active %}
-        <h2>This auction is no longer active</h2>
-    {% else %}
-        <h2>{{ listing.title }}</h2>
+    <div>
+        {% if not listing.active and user == highest_bidder %}
+            <h2>You have Won this auction.</h2>
+        {% elif not listing.active %}
+            <h2>This auction is no longer active</h2>
+        {% else %}
+            <h2>Listing: {{ listing.title }}</h2>
 
-        <p><h5 style="display: inline-block;">Price:</h5> ${{ listing.current_bid }}</p>
+            <form action="{% url 'watch_unwatch' listing.id %}">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
 
-        <form action="{% url 'watch_unwatch' listing.id %}">
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-
-            {% if user in listing.watched_by.all %}
-                <input type="submit" value="Remove from Watchlist">
-            {% else %}
-                <input type="submit" value="Add to Watchlist">
-            {% endif %}
-        </form>
-
-        <img src="{{ listing.image_url }}" alt="Image representing <{{ listing.title }}>" width="500px" height="450px">
-
-        <p>{{ listing.description }}</p>
-
-        <form action="{% url 'bid' listing.id %}" method="post">
-            {% csrf_token %}
-            <input type="number" name="bid_amount">
-            <input type="submit" value="Bid">
-        </form>
-
-        <h4>Comments:</h4>
-
-        <ul>
-            {% for comment in comments %}
-                <li>{{ comment.content }}</li>
-            {% empty %}
-                <li>No comments yet.</li>
-            {% endfor %}
-        </ul>
-
-        <form action="{% url 'comment' listing.id %}" method="post">
-            {% csrf_token %}
-            <label for="id_content">Content:</label>
-            <textarea name="content"  cols="30" rows="10"></textarea>
-            <input type="submit" value="Comment">
-        </form>
-
-        {% if user == listing.creator %}
-            <form action="{% url 'close' listing.id %}">
-                <input type="submit" value="Close Auction">
+                {% if user in listing.watched_by.all %}
+                    <button type="submit" class="btn btn-secondary">Watchlist</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary">Watchlist</button>
+                {% endif %}
             </form>
+
+            <img src="{{ listing.image_url }}" alt="Image representing <{{ listing.title }}>" width="450px" height="400px">
+
+            <h5># {{ listing.current_bid }}</h5>
+
+            <h4>Details</h4>
+            <li>Listed by: <span style="color: rgb(113, 113, 255);">{{ listing.creator.username }}</span></li>
+            <li>Category: {{ listing.category }}</li>
+            <li>Description: {{ listing.description }}</li>
+
+            <form action="{% url 'bid' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="number" name="bid_amount" class="form-control" placeholder="Bid">
+                <button type="submit" class="btn btn-primary">Bid</button>
+            </form>
+
+            <h4>Comments:</h4>
+
+            <ul>
+                {% for comment in comments %}
+                    <li>{{ comment.content }}</li>
+                {% empty %}
+                    <li>No comments yet.</li>
+                {% endfor %}
+            </ul>
+
+            <form action="{% url 'comment' listing.id %}" method="post">
+                {% csrf_token %}
+                <label for="id_content">Content:</label>
+                <textarea name="content"  cols="30" rows="10" class="form-control"></textarea>
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </form>
+
+            {% if user == listing.creator %}
+                <form action="{% url 'close' listing.id %}">
+                    <button type="submit" class="btn btn-secondary">Close Auction</button>
+                </form>
+            {% endif %}
         {% endif %}
-    {% endif %}
+    </div>
 {% endblock %}
