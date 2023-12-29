@@ -72,3 +72,11 @@ To run this project locally, follow these steps:
    ```
 
 6. Visit [http://localhost:8000/admin](http://localhost:8000/admin) to access the Django admin interface and manage the site.
+
+## Contributing
+
+Contributions are welcome!
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
